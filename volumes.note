@@ -1,0 +1,3 @@
+Volumes
+configmap   non-confidential data in key-value pairs
+secrets     similar to ConfigMaps but intended to hold confidential data.
