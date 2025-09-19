@@ -22,5 +22,49 @@ configmap
 > An API object used to store non-confidential data in key-value pairs
 
 ```
-test code
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-app-config
+  namespace: default
+data:
+  # Example 1: Simple key-value pair
+  LOG_LEVEL: "INFO"
+  
+  # Example 2: Multiline data, like a configuration file
+  my-app-config.properties: |
+    server.port=8080
+    database.url=jdbc:mysql://db-server/mydb
+    cache.enabled=true
+---
+# pod-with-configmap.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app-pod
+  namespace: default
+spec:
+  containers:
+  - name: my-app-container
+    image: busybox
+    command: ["/bin/sh", "-c", "env && cat /etc/config/my-app-config.properties" && "sleep 500"]
+    
+    # Method 1: Inject data as environment variables
+    env:
+      - name: APP_LOG_LEVEL
+        valueFrom:
+          configMapKeyRef:
+            name: my-app-config
+            key: LOG_LEVEL
+            
+    # Method 2: Mount the ConfigMap as a volume to access data as a file
+    volumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+        readOnly: true
+        
+  volumes:
+    - name: config-volume
+      configMap:
+        name: my-app-config
 ```
