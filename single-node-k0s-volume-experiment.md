@@ -18,7 +18,7 @@ kubectl get nodes
 
 **Onwards and Upwards**  
 **Creating Volumes**  
-configmap
+**configmap**
 > An API object used to store non-confidential data in key-value pairs
 
 ```
@@ -67,4 +67,26 @@ spec:
     - name: config-volume
       configMap:
         name: my-app-config
+```
+**secrets**  
+>Secrets are similar to ConfigMaps but are specifically intended to hold confidential data.
+```
+kubectl create secret docker-registry secret-tiger-docker \
+  --docker-email=tiger@acme.example \
+  --docker-username=tiger \
+  --docker-password=pass1234 \
+  --docker-server=my-registry.example:5000
+  
+yaml for the above:
+
+kubectl apply -f - << EOF
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJteS1yZWdpc3RyeS5leGFtcGxlOjUwMDAiOnsidXNlcm5hbWUiOiJ0aWdlciIsInBhc3N3b3JkIjoicGFzczEyMzQiLCJlbWFpbCI6InRpZ2VyQGFjbWUuZXhhbXBsZSIsImF1dGgiOiJkR2xuWlhJNmNHRnpjekV5TXpRPSJ9fX0=
+kind: Secret
+metadata:
+  name: secret-tigers-docker
+  namespace: default
+type: kubernetes.io/dockerconfigjson
+EOF
 ```
